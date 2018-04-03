@@ -20,4 +20,9 @@ urlpatterns = [
         views.LeaveCommunity.as_view(),
         name="leave"
     ),
+    url(
+        r"change_status/(?P<slug>[-\w]+)/(?P<user_id>\d+)/(?P<status>\d)/$",
+        views.ChangeStatus.as_view(),
+        name="change_status"
+    ),
 ]

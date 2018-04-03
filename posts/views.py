@@ -1,5 +1,9 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import ( 
+    LoginRequiredMixin,
+    PermissionRequiredMixin
+)
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
@@ -75,3 +79,55 @@ class DeletePost(LoginRequiredMixin, SelectRelatedMixin, generic.DeleteView):
     def delete(self, *args, **kwargs):
         messages.success(self.request, "Message successfully deleted")
         return super().delete(*args, **kwargs)
+
+class ChangeStatus(
+        LoginRequiredMixin,
+        PermissionRequiredMixin,
+        generic.RedirectView
+        ):
+        permission_required = "communities.ban_member"
+
+        def has_permission(self):
+            return any([
+                super().has_permission(),
+                self.request.user.id in self.get_object().admins
+            ])
+
+        def get_object(self):
+            return get_object_or_404(
+                models.Community,
+                slug=self.kwargs.get("slug")
+            )
+
+        def get_redirect_url(self, *args, **kwargs):
+            return self.get_object().get_absolute_url()
+
+        def get(self, request, *args, **kwargs):
+            role = int(self.kwargs.get_status("status"))
+            membership = get_object_or_404(
+                models.CommunityMember,
+                commuinty__slug=self.kwargs.get("slug"),
+                user__id=self.kwargs.get("user_id")
+            )
+            membership.role = role
+            membership.save()
+
+            try:
+                moderators = Group.objects.get(name__iexact="moderators")
+            except Group.DoesNotExist:
+                moderators = Group.objects.create(name="Moderators")
+                moderators.permissions.add(
+                    Permissions.objects.get(codename="ban_members")
+                )
+
+            if role in [2,3]:
+                membership.user.Groups.add(moderators)
+            else:
+                membership.user.Groups.remove(moderators)
+
+            messages.success(request, "@ {} is now {}".format(
+                membership.user.username,
+                membership.get_role_display()
+                )
+            )
+

@@ -1,5 +1,9 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import(
+ LoginRequiredMixin,
+ PermissionRequiredMixin
+ )
+from django.contrib.auth.models import Group, Permission
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
@@ -10,7 +14,7 @@ from braces.views import PrefetchRelatedMixin
 from . import models
 
 
-class CreateCommunity(generic.CreateView):
+class CreateCommunity(LoginRequiredMixin, generic.CreateView):
     fields = ("name", "description")
     model = models.Community
 
@@ -86,3 +90,56 @@ class LeaveCommunity(LoginRequiredMixin, generic.RedirectView):
                 "You've left the group!"
             )
         return super().get(request, *args, **kwargs)
+
+class ChangeStatus(
+        LoginRequiredMixin,
+        PermissionRequiredMixin,
+        generic.RedirectView
+        ):
+        permission_required = "communities.ban_member"
+
+        def has_permission(self):
+            return any([
+                super().has_permission(),
+                self.request.user.id in self.get_object().admins
+            ])
+
+        def get_object(self):
+            return get_object_or_404(
+                models.Community,
+                slug=self.kwargs.get("slug")
+            )
+
+        def get_redirect_url(self, *args, **kwargs):
+            return self.get_object().get_absolute_url()
+
+        def get(self, request, *args, **kwargs):
+            role = int(self.kwargs.get("status"))
+            membership = get_object_or_404(
+                models.CommunityMember,
+                community__slug=self.kwargs.get("slug"),
+                user__id=self.kwargs.get("user_id")
+            )
+            membership.role = role
+            membership.save()
+
+            try:
+                moderators = Group.objects.get(name__iexact="moderators")
+            except Group.DoesNotExist:
+                moderators = Group.objects.create(name="Moderators")
+                moderators.permissions.add(
+                    Permission.objects.get(codename="ban_members")
+                )
+
+            if role in [2,3]:
+                membership.user.groups.add(moderators)
+            else:
+                membership.user.groups.remove(moderators)
+
+            messages.success(request, "@ {} is now {}".format(
+                membership.user.username,
+                membership.get_role_display()
+                )
+            )
+            return super().get(request, *args, **kwargs)
+
