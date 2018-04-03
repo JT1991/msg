@@ -34,6 +34,18 @@ class Community(models.Model):
     def get_absolute_url(self):
         return reverse("communities:single", kwargs={"slug": self.slug})
 
+    @property
+    def admins(self):
+        return self.memberships.filter(role=3).values_list("user", flat=True)
+
+    @property
+    def moderators(self):
+        return self.memberships.filter(role=2).values_list("user", flat=True)
+
+    @property
+    def good_members(self):
+        return self.memberships.exclude(role=0)
+    
     class Meta:
         ordering = ["name"]
         verbose_name_plural = "communities"
@@ -55,4 +67,8 @@ class CommunityMember(models.Model):
         )
 
     class Meta:
+        permissions =  (
+            ("ban_member", "Can ban members"),
+            )
         unique_together = ("community", "user")
+
