@@ -1,0 +1,25 @@
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Password reset on localhost:8000
+From: webmaster@localhost
+To: joshthorn91@gmail.com
+Date: Tue, 03 Apr 2018 14:52:27 -0000
+Message-ID: <20180403145227.11508.57241@Josh-PC>
+
+
+You're receiving this email because you requested a password reset for your user account at localhost:8000.
+
+Please go to the following page and choose a new password:
+
+http://localhost:8000/accounts/reset/Mw/4v1-2008f035f0d74892c3f2/
+
+Your username, in case you've forgotten: josh
+
+Thanks for using our site!
+
+The localhost:8000 team
+
+
+
+-------------------------------------------------------------------------------
