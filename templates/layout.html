@@ -1,4 +1,5 @@
 {% load static from staticfiles %}
+{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -46,8 +47,9 @@
 						<li><a href="#" class="btn btn-simple">Log out</a></li>
 						{% else %}
 						<li><a href="{% url 'posts:all' %}" class="btn btn-simple">Posts</a></li>
-						<li><a href="#" class="btn btn-simple">Log in</a></li>
-						<li><a href="#" class="btn btn-simple">Sign up</a></li>
+						<li><a href="{% provider_login_url 'github' %}" class="btn btn-simple">Log in</a></li>
+						<!-- <li><a href="#" class="btn btn-simple">Sign up</a></li> -->
+						
 						{% endif %}
 					</ul>
 				</div><!-- /.navbar-collapse -->

@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from . import views
 
+app_name = 'communities'
+
 urlpatterns = [
     url(r"^$", views.AllCommunities.as_view(), name="list"),
     url(r"^new/$", views.CreateCommunity.as_view(), name="create"),
