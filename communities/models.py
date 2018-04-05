@@ -21,6 +21,7 @@ class Community(models.Model):
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
          through="CommunityMember",
+         null = True
          )
 
     def __str__(self):
