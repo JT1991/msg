@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 
 import misaka
@@ -8,12 +8,21 @@ from communities.models import Community
 
 
 class Post(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="posts")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="posts",
+        null=True,
+    )
     created_at = models.DateTimeField(auto_now=True)
     message = models.TextField()
     message_html = models.TextField(editable=False)
-    community = models.ForeignKey(Community, related_name="posts",
-                                  null=True, blank=True)
+    community = models.ForeignKey(
+        Community,
+        on_delete=models.SET_NULL,
+        related_name="posts",
+        null=True, 
+        blank=True)
 
     def __str__(self):
         return self.message

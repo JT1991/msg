@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import (
 )
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import Http404
 from django.views import generic
 

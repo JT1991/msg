@@ -23,7 +23,9 @@ urlpatterns = [
     url(r"^admin/", admin.site.urls),
     url(r"^accounts/", include("accounts.urls", namespace ="accounts")),
     url(r"^accounts/", include("django.contrib.auth.urls")),
+    url(r"^accounts/", include("allauth.urls")),
     url(r"^posts/", include("posts.urls", namespace="posts")),
     url(r"^communities/",
         include("communities.urls", namespace="communities")),
+
 ]
