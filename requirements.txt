@@ -1,8 +1,8 @@
 cffi==1.7.0
-Django==2.0.4
+Django==2.2.24
 django-bootstrap3==7.0.1
 django-braces==1.9.0
-django-debug-toolbar==1.5
+django-debug-toolbar==1.11.1
 misaka==2.0.0
 pycparser==2.14
-sqlparse==0.2.1
+sqlparse==0.4.2
